@@ -1,52 +1,57 @@
-class BaseModel {
-    static data = [];
+const mongoose = require("mongoose");
 
+class BaseModel {
     constructor(attributes = {}) {
         const fillable = this.constructor._fillable || {};
 
-        Object.keys(fillable).forEach(key => {
-            const type = fillable[key];
-
+        Object.entries(fillable).forEach(([key, type]) => {
             let value = attributes[key] ?? null;
-
             if (value !== null) {
                 if (type === "number") value = Number(value);
-                if (type === "string") value = String(value);
+                else if (type === "string") value = String(value);
+                else if (type === "boolean") value = Boolean(value);
+                else if (type === "date") value = new Date(value);
             }
-
-            // Stockage privé
-            this[`_${key}`] = value;
-
-            // Getter et setter dynamique
-            Object.defineProperty(this, key, {
-                get: () => this[`_${key}`],
-                set: (val) => { this[`_${key}`] = val; },
-                enumerable: true,
-            });
+            this[key] = value; // plus besoin de préfixe _
         });
+    }
 
-        // Id automatique si non fourni
-        if (!this.id) {
-            this.id = Date.now();
+    async save() {
+        const Model = this.constructor.getMongooseModel();
+        const doc = new Model(this); // crée un document Mongoose
+        const saved = await doc.save(); // MongoDB génère l'_id automatiquement
+        this._id = saved._id; // stocke l'_id dans l'instance si besoin
+        return saved;
+    }
+
+    static async all() {
+        return await this.getMongooseModel().find({});
+    }
+
+    static async find(filters = {}) {
+        return await this.getMongooseModel().find(filters);
+    }
+
+    static async findById(id) {
+        return await this.getMongooseModel().findById(id);
+    }
+
+    static async delete(id) {
+        return await this.getMongooseModel().findByIdAndDelete(id);
+    }
+
+    static getMongooseModel() {
+        if (!this._mongooseModel) {
+            const schemaDef = Object.fromEntries(
+                Object.entries(this._fillable).map(([key, type]) => {
+                    const map = { string: String, number: Number, boolean: Boolean, date: Date };
+                    return [key, map[type] || String];
+                })
+            );
+            const schema = new mongoose.Schema(schemaDef, { timestamps: true });
+            this._mongooseModel = mongoose.model(this.name, schema);
         }
-    }
-
-    save() {
-        const index = this.constructor.data.findIndex(d => d.id === this.id);
-        if (index === -1) this.constructor.data.push(this);
-        else this.constructor.data[index] = this;
-    }
-
-    static all() {
-        return this.data;
-    }
-
-    static find(id) {
-        return this.data.find(d => d.id == id);
-    }
-
-    static delete(id) {
-        this.data = this.data.filter(d => d.id != id);
+        return this._mongooseModel;
     }
 }
 

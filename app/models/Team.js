@@ -1,15 +1,14 @@
 const BaseModel = require("../../src/BaseModel");
 
-class User extends BaseModel {
+class Team extends BaseModel {
     constructor(attributes = {}) {
         super(attributes);
     }
 
     static _fillable = {
         name: "string",
-        email: "string",
-        age: "number",
+        category: "string"
     };
 }
 
-module.exports = User;
+module.exports = Team;

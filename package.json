@@ -5,17 +5,21 @@
   "main": "app/app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon app/app.js",
-    "build:css": "npx tailwindcss -i ./src/styles/tailwind.css -o ./app/public/styles.css --minify"
+    "dev": "concurrently \"nodemon src/app.js\" \"npm run browser-sync\"",
+    "browser-sync": "browser-sync start --proxy 'http://localhost:3000' --files 'app/**/*.js, app/views/**/*.js' --no-open --reload-delay 100"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^17.2.3",
     "express": "^5.2.1",
+    "mongoose": "^9.0.0",
     "nodemon": "^3.1.11"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.22",
+    "browser-sync": "^3.0.4",
+    "concurrently": "^9.2.1",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.17"
   }
