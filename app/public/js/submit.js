@@ -24,15 +24,14 @@ document.addEventListener("DOMContentLoaded", function() {
             const result = await res.json();
             if (message) {
                 if (res.ok) {
-                    message.textContent = "Envoiye du formulaire réaliser avec succès";
+                    message.textContent = result.message;
                     form.reset();
                 } else {
                     message.textContent = "Erreur : " + result.error;
                 }
             }
         } catch (err) {
-            message.textContent = "Erreur serveur : " + err.message;
+            message.textContent = "Erreur serveur : " + err.details;
         }
     });
 });
-</script>

@@ -29,6 +29,8 @@
                         </select>
                     </div>
 
+                    <p id="message"></p>
+
                     <button type="submit" class="px-6 py-2 bg-green-500 text-white font-semibold rounded hover:bg-green-600 transition">
                         Créer l'équipe
                     </button>
@@ -36,7 +38,7 @@
                 </form>
 
                 <div class="mt-6 text-center">
-                    <a href="/team" class="text-blue-500 hover:underline">← Retour à la liste des équipes</a>
+                    <a id="lienBack" href="/team" class="text-blue-500 hover:underline">← Retour à la liste des équipes</a>
                 </div>
             </main>
 
@@ -53,6 +55,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (categoryParam) {
         const select = document.querySelector("#category");
         if (select) select.value = categoryParam;
+        const lienBack = document.querySelector("#lienBack");
+        if(lienBack) lienBack.href = `/team/${categoryParam}`;
     }
 });
 </script>
+<script src="/js/submit.js" defer></script>

@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const webRoutes = require('./routes/web');
+const apiRoutes = require("./routes/api")
 const { default: mongoose } = require('mongoose');
 require("dotenv").config();
 
@@ -10,8 +11,13 @@ app.use(express.urlencoded({ extended: true }));
 // Pour parser le JSON si nécessaire
 app.use(express.json());
 
+// Gestion du public
+app.use(express.static(__dirname + "/public"));
+
 // **Enregistrer les routes**
 app.use('/', webRoutes);
+
+app.use("/api", apiRoutes)
 
 // Dossier public pour CSS / JS
 app.use(express.static('public'));
