@@ -9,9 +9,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     .then((response) => response.json())
                     .then((data) => {
                         if (data.success) {
-                            console.log("Équipe supprimée !");
-                            // Optionnel : retirer le bloc du DOM
-                            button.closest(".team-card").remove();
+                            console.log("Succès :", data.message);
+                            
+                            document.querySelector("#" + button.dataset.id.replace(/^(\d)/, "\\3$1 ")).remove();
                         } else {
                             console.error("Erreur :", data.error);
                         }

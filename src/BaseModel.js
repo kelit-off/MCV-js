@@ -87,8 +87,22 @@ class BaseModel {
 
             const schema = new mongoose.Schema(schemaDef, { timestamps: true });
             this._mongooseModel = mongoose.model(this.name, schema);
+
+            this.autoMigrate().catch(console.error);
         }
         return this._mongooseModel;
+    }
+
+    static async autoMigrate() {
+        const Model = this.getMongooseModel();
+        const fields = Object.keys(this._fillable);
+
+        for (const field of fields) {
+            await Model.updateMany(
+                { [field]: { $exists: false } }, // champ manquant
+                { $set: { [field]: null } } // valeur par défaut
+            );
+        }
     }
 }
 
