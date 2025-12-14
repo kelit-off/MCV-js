@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         try {
             const res = await fetch(form.action, { // utilise l'URL dynamique du form
-                method: form.method.toUpperCase(), // POST ou GET selon le form
+                method: form.dataset.method.toUpperCase(),
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
             });
