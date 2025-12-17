@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
             });
-
+                
             const result = await res.json();
             if (message) {
                 if (res.ok) {

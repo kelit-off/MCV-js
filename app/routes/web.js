@@ -11,9 +11,11 @@ router.get('/', HomeController.index);
 
 router.get("/team/create", TeamController.create);
 router.get("/team/:category", TeamController.category)
+router.get('/team/edit/:id', TeamController.edit);
 
 router.get('/car', CarController.index);
 router.get('/car/create', CarController.create);
+router.get("/car/edit/:id", CarController.edit);
 
 // // --- Modification d'un utilisateur ---
 // router.get('/users/edit/:id', TeamController.editForm);

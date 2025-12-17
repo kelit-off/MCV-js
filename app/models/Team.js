@@ -1,3 +1,4 @@
+const { default: mongoose } = require("mongoose");
 const BaseModel = require("../../src/BaseModel");
 
 class Team extends BaseModel {
@@ -7,7 +8,8 @@ class Team extends BaseModel {
 
     static _fillable = {
         name: "string",
-        category: "string"
+        category: "string",
+        car: "string",
     };
 }
 

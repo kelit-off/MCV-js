@@ -10,6 +10,8 @@ router.delete("/team/delete/:id", TeamController.delete)
 // router.put("/team/edit", TeamController.editPut);
 
 router.post("/car", CarController.createPost)
+router.get("/car", CarController.getList)
 router.delete("/car/delete/:id", CarController.delete)
+router.put("/car", CarController.editPut);
 
 module.exports = router;

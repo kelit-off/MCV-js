@@ -67,9 +67,11 @@ module.exports = class CarController {
     static create(req, res) {
         const templatePath = path.join(
             __dirname,
-            "../views/CarCreateView.html"
+            "../views/CarCreateEditView.html"
         );
         let content = fs.readFileSync(templatePath, "utf-8");
+        content = content.replace(/\$\{[^}]*\}/g, "");
+        content = content.replace(/{{method}}/g, "POST");
 
         const metadata = {};
 
@@ -139,6 +141,78 @@ module.exports = class CarController {
         }
     }
 
+    static async edit(req, res) {
+        try {
+            const carId = req.params.id;
+            const car = await Car.findById(carId);
+
+            const templatePath = path.join(
+                __dirname,
+                "../views/CarCreateEditView.html"
+            );
+            let content = fs.readFileSync(templatePath, "utf-8");
+            content = content.replace("{{method}}", `PUT`);
+            content = content.replace("${_id}", car._id);
+            content = content.replace("${name}", car.name);
+            content = content.replace(
+                "${manufacturer}",
+                car.manufacturer || ""
+            );
+            content = content.replace(/{{category}}/g, car.category || "");
+            content = content.replace("${year}", car.year || "");
+            content = content.replace(/{{method}}/g, "PUT");
+
+            content = content.replace(
+                "${selected_gt3}",
+                car.category === "gt3" ? "selected" : ""
+            );
+            content = content.replace(
+                "${selected_gt4}",
+                car.category === "gt4" ? "selected" : ""
+            );
+
+            return res.send(
+                MainLayout({
+                    metadata: { title: `Éditer la voiture ${car.name}` },
+                    content,
+                })
+            );
+        } catch (error) {
+            console.error(error);
+            return res.status(500).send("Erreur interne");
+        }
+    }
+
+    static async editPut(req, res) {
+        try {
+            const { _id, name, manufacturer, model, category, year, image, description, active } = req.body;
+
+            const car = await Car.findById(_id);
+
+            car.name = name.trim();
+            car.manufacturer = manufacturer ? manufacturer.trim() : "";
+            car.model = model ? model.trim() : "";
+            car.category = category ? category.trim() : "";
+            car.year = year ? parseInt(year) : null;
+            car.image = image ? image.trim() : "";
+            car.description = description ? description.trim() : "";
+            car.active = active === "on" ? true : false;
+
+            await car.save();
+
+            if (req.originalUrl.startsWith("/api/")) {
+                return res.json({
+                    success: true,
+                    message: "Voiture mise à jour avec succès.",
+                    car,
+                });
+            }
+        } catch (error) {
+            console.error(error);
+            return res.status(500).send("Erreur interne");
+        }
+    }
+
     static async delete(req, res) {
         try {
             const carId = req.params.id;
@@ -153,7 +227,7 @@ module.exports = class CarController {
             }
         } catch (error) {
             console.error(error);
-            
+
             if (req.originalUrl.startsWith("/api/")) {
                 return res.status(500).json({
                     success: false,
@@ -161,6 +235,20 @@ module.exports = class CarController {
                     detail: error.message,
                 });
             }
+        }
+    }
+
+    static async getList(req, res) {
+        try {
+            const cars = await Car.find();
+            return res.json({ success: true, cars: cars });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({
+                success: false,
+                error: "Erreur interne du serveur.",
+                detail: error.message,
+            });
         }
     }
 };

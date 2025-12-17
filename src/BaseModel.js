@@ -59,8 +59,14 @@ class BaseModel {
         return await this.getMongooseModel().find({});
     }
 
-    static async find(filters = {}) {
-        return await this.getMongooseModel().find(filters);
+    static async find(filters = {}, populate = null) {
+        let query = this.getMongooseModel().find(filters);
+
+        if (populate) {
+            query = query.populate(populate);
+        }
+
+        return await query;
     }
 
     static async findById(id) {
@@ -80,6 +86,7 @@ class BaseModel {
                         number: Number,
                         boolean: Boolean,
                         date: Date,
+                        objectId: mongoose.Schema.Types.ObjectId,
                     };
                     return [key, map[type] || String];
                 })
